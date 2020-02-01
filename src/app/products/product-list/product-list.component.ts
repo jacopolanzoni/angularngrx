@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-
+import { Store, select } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
 import { Product } from '../product';
@@ -11,18 +11,18 @@ import { ProductService } from '../product.service';
   styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit, OnDestroy {
-  pageTitle = 'Products';
-  errorMessage: string;
 
-  displayCode: boolean;
+  public displayCode: boolean;
+  public errorMessage: string;
+  public pageTitle = 'Products';
+  public products: Product[];
+  public selectedProduct: Product | null;
+  public sub: Subscription;
 
-  products: Product[];
-
-  // Used to highlight the selected product in the list
-  selectedProduct: Product | null;
-  sub: Subscription;
-
-  constructor(private productService: ProductService) { }
+  constructor(
+    private readonly productService: ProductService,
+    private readonly store: Store<any>
+  ) { }
 
   ngOnInit(): void {
     this.sub = this.productService.selectedProductChanges$.subscribe(
@@ -33,14 +33,24 @@ export class ProductListComponent implements OnInit, OnDestroy {
       next: (products: Product[]) => this.products = products,
       error: (err: any) => this.errorMessage = err.error
     });
+
+    // TODO: Unsubscribe
+    this.store.pipe(select('products')).subscribe((products) => {
+      if (products) {
+        this.displayCode = products.showProductCode;
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
   }
 
-  checkChanged(value: boolean): void {
-    this.displayCode = value;
+  public checkChanged(value: boolean): void {
+    this.store.dispatch({
+      type: 'TOGGLE_PRODUCT_CODE',
+      payload: value
+    });
   }
 
   newProduct(): void {

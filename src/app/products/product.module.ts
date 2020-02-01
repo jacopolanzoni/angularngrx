@@ -1,25 +1,25 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { StoreModule } from '@ngrx/store';
 
-import { SharedModule } from '../shared/shared.module';
-
-import { ProductShellComponent } from './product-shell/product-shell.component';
-import { ProductListComponent } from './product-list/product-list.component';
 import { ProductEditComponent } from './product-edit/product-edit.component';
-
-const productRoutes: Routes = [
-  { path: '', component: ProductShellComponent }
-];
+import { ProductListComponent } from './product-list/product-list.component';
+import { ProductShellComponent } from './product-shell/product-shell.component';
+import { reducer } from './state/product.reducer';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
+    RouterModule.forChild([
+      { path: '', component: ProductShellComponent }
+    ]),
     SharedModule,
-    RouterModule.forChild(productRoutes)
+    StoreModule.forFeature('products', reducer)
   ],
   declarations: [
-    ProductShellComponent,
+    ProductEditComponent,
     ProductListComponent,
-    ProductEditComponent
+    ProductShellComponent
   ]
 })
-export class ProductModule { }
+export class ProductModule {}

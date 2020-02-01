@@ -1,29 +1,26 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
-
-// Imports for loading & configuring the in-memory web api
+import { StoreModule } from '@ngrx/store';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { ProductData } from './products/product-data';
-
-import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
-import { ShellComponent } from './home/shell.component';
+import { AppRoutingModule } from './app-routing.module';
 import { MenuComponent } from './home/menu.component';
-import { WelcomeComponent } from './home/welcome.component';
 import { PageNotFoundComponent } from './home/page-not-found.component';
-
-/* Feature Modules */
+import { ProductData } from './products/product-data';
+import { ShellComponent } from './home/shell.component';
 import { UserModule } from './user/user.module';
+import { WelcomeComponent } from './home/welcome.component';
 
 @NgModule({
   imports: [
+    AppRoutingModule,
     BrowserModule,
-    HttpClientModule,
     HttpClientInMemoryWebApiModule.forRoot(ProductData),
-    UserModule,
-    AppRoutingModule
+    HttpClientModule,
+    StoreModule.forRoot({}),
+    UserModule
   ],
   declarations: [
     AppComponent,
@@ -32,6 +29,8 @@ import { UserModule } from './user/user.module';
     WelcomeComponent,
     PageNotFoundComponent
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [
+    AppComponent
+  ]
 })
 export class AppModule { }
