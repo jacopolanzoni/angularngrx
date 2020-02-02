@@ -15,12 +15,12 @@ import { WelcomeComponent } from './home/welcome.component';
 
 @NgModule({
   imports: [
-    AppRoutingModule,
     BrowserModule,
     HttpClientInMemoryWebApiModule.forRoot(ProductData),
     HttpClientModule,
     StoreModule.forRoot({}),
-    UserModule
+    UserModule,
+    AppRoutingModule
   ],
   declarations: [
     AppComponent,
