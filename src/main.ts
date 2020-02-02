@@ -7,6 +7,5 @@ import { environment } from './environments/environment';
 if (environment.production) {
   enableProdMode();
 }
-
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+/* tslint:disable-next-line:no-console */
+platformBrowserDynamic().bootstrapModule(AppModule).catch((err) => console.error(err));

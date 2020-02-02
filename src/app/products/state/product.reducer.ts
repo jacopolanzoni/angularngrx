@@ -3,8 +3,8 @@ export function reducer(state, action) {
     case 'TOGGLE_PRODUCT_CODE':
       return {
         ...state,
-        showProductCode: action.payload
-      }
+        showProductCode: action.payload,
+      };
     default:
       return state;
   }

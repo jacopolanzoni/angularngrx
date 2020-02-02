@@ -1,32 +1,30 @@
 import { Injectable } from '@angular/core';
 
-import { User } from './user';
+import { IUser } from './user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-    currentUser: User | null;
-    redirectUrl: string;
+    public currentUser: IUser | null;
+    public redirectUrl: string;
 
-    constructor() {  }
-
-    isLoggedIn(): boolean {
+    public isLoggedIn(): boolean {
         return !!this.currentUser;
     }
 
-    login(userName: string, password: string): void {
+    public login(userName: string, password: string): void {
         // Code here would log into a back end service
         // and return user information
         // This is just hard-coded here.
         this.currentUser = {
             id: 2,
+            isAdmin: false,
             userName,
-            isAdmin: false
         };
     }
 
-    logout(): void {
+    public logout(): void {
         this.currentUser = null;
     }
 }

@@ -1,38 +1,38 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Store, select } from '@ngrx/store';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { select, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
-import { Product } from '../product';
+import { IProduct } from '../product';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'pm-product-list',
+  styleUrls: ['./product-list.component.css'],
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit, OnDestroy {
 
   public displayCode: boolean;
   public errorMessage: string;
   public pageTitle = 'Products';
-  public products: Product[];
-  public selectedProduct: Product | null;
+  public products: IProduct[];
+  public selectedProduct: IProduct | null;
   public sub: Subscription;
 
   constructor(
     private readonly productService: ProductService,
-    private readonly store: Store<any>
+    private readonly store: Store<any>,
   ) { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.sub = this.productService.selectedProductChanges$.subscribe(
-      selectedProduct => this.selectedProduct = selectedProduct
+      (selectedProduct) => this.selectedProduct = selectedProduct,
     );
 
-    this.productService.getProducts().subscribe({
-      next: (products: Product[]) => this.products = products,
-      error: (err: any) => this.errorMessage = err.error
-    });
+    this.productService.getProducts().subscribe(
+      (products: IProduct[]) => this.products = products,
+      (err: any) => this.errorMessage = err.error,
+    );
 
     // TODO: Unsubscribe
     this.store.pipe(select('products')).subscribe((products) => {
@@ -42,22 +42,22 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.sub.unsubscribe();
   }
 
   public checkChanged(value: boolean): void {
     this.store.dispatch({
+      payload: value,
       type: 'TOGGLE_PRODUCT_CODE',
-      payload: value
     });
   }
 
-  newProduct(): void {
+  public newProduct(): void {
     this.productService.changeSelectedProduct(this.productService.newProduct());
   }
 
-  productSelected(product: Product): void {
+  public productSelected(product: IProduct): void {
     this.productService.changeSelectedProduct(product);
   }
 

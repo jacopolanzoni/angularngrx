@@ -3,8 +3,8 @@ export function reducer(state, action) {
     case 'TOGGLE_USER_NAME_MASK':
       return {
         ...state,
-        maskUserName: action.payload
-      }
+        maskUserName: action.payload,
+      };
     default:
       return state;
   }

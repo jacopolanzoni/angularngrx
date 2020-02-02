@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Store, select } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 
 import { AuthService } from './auth.service';
 
 @Component({
+  styleUrls: ['./login.component.css'],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
 
@@ -18,10 +18,10 @@ export class LoginComponent implements OnInit {
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router,
-    private readonly store: Store<any>
+    private readonly store: Store<any>,
   ) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.store.pipe(select('user')).subscribe((user) => {
       if (user) {
         this.maskUserName = user.maskUserName;
@@ -29,18 +29,18 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  cancel(): void {
+  public cancel(): void {
     this.router.navigate(['welcome']);
   }
 
-  checkChanged(value: boolean): void {
+  public checkChanged(value: boolean): void {
     this.store.dispatch({
+      payload: value,
       type: 'TOGGLE_USER_NAME_MASK',
-      payload: value
     });
   }
 
-  login(loginForm: NgForm): void {
+  public login(loginForm: NgForm): void {
     if (loginForm && loginForm.valid) {
       const userName = loginForm.form.value.userName;
       const password = loginForm.form.value.password;

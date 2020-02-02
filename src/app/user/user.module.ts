@@ -2,20 +2,20 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { StoreModule } from '@ngrx/store';
 
+import { SharedModule } from '../shared/shared.module';
 import { LoginComponent } from './login.component';
 import { reducer } from './state/user.reducer';
-import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
+  declarations: [
+    LoginComponent,
+  ],
   imports: [
     RouterModule.forChild([
-      { path: 'login', component: LoginComponent }
+      { path: 'login', component: LoginComponent },
     ]),
     SharedModule,
-    StoreModule.forFeature('user', reducer)
+    StoreModule.forFeature('user', reducer),
   ],
-  declarations: [
-    LoginComponent
-  ]
 })
 export class UserModule {}
