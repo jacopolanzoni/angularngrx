@@ -1,6 +1,7 @@
 import { createFeatureSelector, createSelector, MemoizedSelector } from '@ngrx/store';
 
 import { IUser } from '../user';
+import { UserAction, UserActions } from './user.actions';
 
 export interface IUserState {
   currentUser: IUser;
@@ -20,9 +21,9 @@ const initialUserState: IUserState = {
   maskUserName: true,
 };
 
-export function reducer(state: IUserState = initialUserState, action): IUserState {
+export function reducer(state: IUserState = initialUserState, action: UserActions): IUserState {
   switch (action.type) {
-    case 'TOGGLE_USER_NAME_MASK':
+    case UserAction.MaskUserName:
       return {
         ...state,
         maskUserName: action.payload,

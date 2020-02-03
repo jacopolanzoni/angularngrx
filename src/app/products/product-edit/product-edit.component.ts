@@ -1,35 +1,36 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { select, Store } from '@ngrx/store';
 
+import { IState } from 'src/app/state/app.state';
 import { GenericValidator } from '../../shared/generic-validator';
 import { NumberValidators } from '../../shared/number.validator';
 import { IProduct } from '../product';
 import { ProductService } from '../product.service';
+import { ClearCurrentProduct, SetCurrentProduct } from '../state/product.actions';
+import { getCurrentProduct } from '../state/product.reducer';
 
 @Component({
   selector: 'pm-product-edit',
   styleUrls: ['./product-edit.component.css'],
   templateUrl: './product-edit.component.html',
 })
-export class ProductEditComponent implements OnInit, OnDestroy {
-  public pageTitle = 'Product Edit';
+export class ProductEditComponent implements OnInit {
+
+  public displayMessage: { [key: string]: string } = {};
   public errorMessage = '';
+  public pageTitle = 'Product Edit';
+  public product: IProduct | null;
   public productForm: FormGroup;
 
-  public product: IProduct | null;
-  public sub: Subscription;
-
-  // Use with the generic validation message class
-  public displayMessage: { [key: string]: string } = {};
-  private validationMessages: { [key: string]: { [key: string]: string } };
   private genericValidator: GenericValidator;
+  private validationMessages: { [key: string]: { [key: string]: string } };
 
-  constructor(private fb: FormBuilder,
-              private productService: ProductService) {
-
-    // Defines all of the validation messages for the form.
-    // These could instead be retrieved from a file or database.
+  constructor(
+    private formBuilder: FormBuilder,
+    private productService: ProductService,
+    private store: Store<IState>,
+  ) {
     this.validationMessages = {
       productCode: {
         required: 'Product code is required.',
@@ -51,26 +52,22 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     // Define the form group
-    this.productForm = this.fb.group({
+    this.productForm = this.formBuilder.group({
       description: '',
       productCode: [ '', Validators.required ],
       productName: [ '', [ Validators.required, Validators.minLength(3), Validators.maxLength(50) ] ],
       starRating: [ '', NumberValidators.range(1, 5) ],
     });
 
-    // Watch for changes to the currently selected product
-    this.sub = this.productService.selectedProductChanges$.subscribe(
-      (selectedProduct) => this.displayProduct(selectedProduct),
+    // TODO: Unsubscribe
+    this.store.pipe(select(getCurrentProduct)).subscribe(
+      (currentProduct: IProduct) => this.displayProduct(currentProduct),
     );
 
     // Watch for value changes
     this.productForm.valueChanges.subscribe(
       (value) => this.displayMessage = this.genericValidator.processMessages(this.productForm),
     );
-  }
-
-  public ngOnDestroy(): void {
-    this.sub.unsubscribe();
   }
 
   // Also validate on blur
@@ -110,12 +107,12 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     if (this.product && this.product.id) {
       if (confirm(`Really delete the product: ${this.product.productName}?`)) {
         this.productService.deleteProduct(this.product.id).subscribe(
-          () => this.productService.changeSelectedProduct(null),
+          () => this.store.dispatch(new ClearCurrentProduct()),
           (err) => this.errorMessage = err.error,
         );
       }
     } else {
-      this.productService.changeSelectedProduct(null);
+      this.store.dispatch(new ClearCurrentProduct());
     }
   }
 
@@ -129,12 +126,12 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
         if (p.id === 0) {
           this.productService.createProduct(p).subscribe(
-            (product) => this.productService.changeSelectedProduct(product),
+            (product) => this.store.dispatch(new SetCurrentProduct(product)),
             (err) => this.errorMessage = err.error,
           );
         } else {
           this.productService.updateProduct(p).subscribe(
-            (product) => this.productService.changeSelectedProduct(product),
+            (product) => this.store.dispatch(new SetCurrentProduct(product)),
             (err) => this.errorMessage = err.error,
           );
         }

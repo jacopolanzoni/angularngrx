@@ -3,7 +3,9 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 
+import { IState } from '../state/app.state';
 import { AuthService } from './auth.service';
+import { MaskUserName } from './state/user.actions';
 import { getMaskUserName } from './state/user.reducer';
 
 @Component({
@@ -19,7 +21,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router,
-    private readonly store: Store<any>,
+    private readonly store: Store<IState>,
   ) {}
 
   public ngOnInit(): void {
@@ -33,10 +35,7 @@ export class LoginComponent implements OnInit {
   }
 
   public checkChanged(value: boolean): void {
-    this.store.dispatch({
-      payload: value,
-      type: 'TOGGLE_USER_NAME_MASK',
-    });
+    this.store.dispatch(new MaskUserName(value));
   }
 
   public login(loginForm: NgForm): void {

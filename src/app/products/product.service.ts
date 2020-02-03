@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { IProduct } from './product';
@@ -13,14 +13,7 @@ export class ProductService {
   private productsUrl = 'api/products';
   private products: IProduct[];
 
-  private selectedProductSource = new BehaviorSubject<IProduct | null>(null);
-  public selectedProductChanges$ = this.selectedProductSource.asObservable();
-
   constructor(private http: HttpClient) { }
-
-  public changeSelectedProduct(selectedProduct: IProduct | null): void {
-    this.selectedProductSource.next(selectedProduct);
-  }
 
   public getProducts(): Observable<IProduct[]> {
     if (this.products) {
@@ -31,16 +24,6 @@ export class ProductService {
         tap((data) => this.products = data),
         catchError(this.handleError),
       );
-  }
-
-  public newProduct(): IProduct {
-    return {
-      description: '',
-      id: 0,
-      productCode: 'New',
-      productName: '',
-      starRating: 0,
-    };
   }
 
   public createProduct(product: IProduct): Observable<IProduct> {
